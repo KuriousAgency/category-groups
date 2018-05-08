@@ -1,0 +1,39 @@
+{
+	"name": "kuriousagency/category-groups",
+	"description": "Craft CMS category groups",
+	"type": "craft-plugin",
+	"minimum-stability": "dev",
+	"version": "1.0.0",
+	"keywords": [
+		"craft",
+		"cms",
+		"craftcms",
+		"craft-plugin",
+		"category groups"
+	],
+	"support": {
+		"docs": "https://github.com/kuriousagency/category-groups/blob/master/README.md",
+		"issues": "https://github.com/kuriousagency/category-groups/issues"
+	},
+	"license": "MIT",
+	"authors": [{
+		"name": "Kurious Agency",
+		"homepage": "https://kurious.agency"
+	}],
+	"require": {
+		"craftcms/cms": "^3.0.0-RC1"
+	},
+	"autoload": {
+		"psr-4": {
+			"kuriousagency\\categorygroups\\": "src/"
+		}
+	},
+	"extra": {
+		"name": "Category Groups",
+		"handle": "category-groups",
+		"hasCpSettings": false,
+		"hasCpSection": false,
+		"changelogUrl": "https://raw.githubusercontent.com/kuriousagency/category-groups/master/CHANGELOG.md",
+		"class": "kuriousagency\\categorygroups\\CategoryGroups"
+	}
+}
