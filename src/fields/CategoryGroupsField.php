@@ -11,7 +11,7 @@
 namespace kuriousagency\categorygroups\fields;
 
 use kuriousagency\categorygroups\CategoryGroups;
-use kuriousagency\categorygroups\assetbundles\categorygroupsfieldfield\CategoryGroupsFieldFieldAsset;
+use kuriousagency\categorygroups\models\Group;
 
 use Craft;
 use craft\base\ElementInterface;
@@ -34,7 +34,7 @@ class CategoryGroupsField extends Field
     /**
      * @var string
      */
-    public $someAttribute = 'Some Default';
+	public $sources;
 
     // Static Methods
     // =========================================================================
@@ -56,10 +56,6 @@ class CategoryGroupsField extends Field
     public function rules()
     {
         $rules = parent::rules();
-        $rules = array_merge($rules, [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
-        ]);
         return $rules;
     }
 
@@ -77,20 +73,19 @@ class CategoryGroupsField extends Field
     public function normalizeValue($value, ElementInterface $element = null)
     {
 
-        // echo $value;
-        // exit();
+        if ($value instanceof Group) {
+			return $value;
+		}
 
-        $value = json_decode($value);
-        
-        if(is_int($value)) {
-            $data['group'] = Craft::$app->categories->getGroupById($value);
-            $data['categories'] = Category::find()->group($data['group']->handle);
+		if (is_string($value)) {
+			$value = Json::decodeIfJson($value);
+		}
 
-            return $data;
-           
-        }    
+		$model = new Group();
+		$model->value = $value;
 
-        return $value;
+		return $model;
+
     }
 
     /**
@@ -98,67 +93,59 @@ class CategoryGroupsField extends Field
      */
     public function serializeValue($value, ElementInterface $element = null)
     {         
-        return parent::serializeValue($value['group']->id, $element);
+		return parent::serializeValue($value->value, $element);
     }
 
     /**
      * @inheritdoc
      */
-    // public function getSettingsHtml()
-    // {
-    //     // Render the settings template
-    //     return Craft::$app->getView()->renderTemplate(
-    //         'category-groups/_components/fields/CategoryGroupsField_settings',
-    //         [
-    //             'field' => $this,
-    //         ]
-    //     );
-    // }
+    public function getSettingsHtml()
+    {
+        // Render the settings template
+        return Craft::$app->getView()->renderTemplate(
+            'category-groups/_components/fields/settings',
+            [
+                'field' => $this,
+            ]
+        );
+    }
 
     /**
      * @inheritdoc
      */
     public function getInputHtml($value, ElementInterface $element = null): string
     {
-        
-        // craft::dd($value);
-
-        // Register our asset bundle
-        // Craft::$app->getView()->registerAssetBundle(CategoryGroupsFieldFieldAsset::class);
-
-        // Get our id and namespace
 
         $id = Craft::$app->getView()->formatInputId($this->handle);
         $namespacedId = Craft::$app->getView()->namespaceInputId($id);
 
-        $categoryGroups = Craft::$app->categories->getAllGroups();
-        $options = [];
-
-        foreach($categoryGroups as $group) {
-            $options[$group->id] = $group->name;
-        }
-
-        // Variables to pass down to our field JavaScript to let it namespace properly
-        $jsonVars = [
-            'id' => $id,
-            'name' => $this->handle,
-            'namespace' => $namespacedId,
-            'prefix' => Craft::$app->getView()->namespaceInputId(''),
-            ];
-        $jsonVars = Json::encode($jsonVars);
-        Craft::$app->getView()->registerJs("$('#{$namespacedId}-field').CategoryGroupsCategoryGroupsField(" . $jsonVars . ");");
+        $options = $this->getOptions(true);
 
         // Render the input template
         return Craft::$app->getView()->renderTemplate(
-            'category-groups/_components/fields/CategoryGroupsField_input',
+            'category-groups/_components/fields/input',
             [
                 'name' => $this->handle,
-                'value' => $value ? $value['group']->id : "",
+                'model' => $value,
                 'field' => $this,
                 'id' => $id,
                 'options' => $options,
                 'namespacedId' => $namespacedId,
             ]
         );
-    }
+	}
+	
+	public function getOptions($filtered=false)
+	{
+		$categoryGroups = Craft::$app->categories->getAllGroups();
+        $options = [];
+
+        foreach($categoryGroups as $group) {
+			if (!$filtered || ($filtered && ($this->sources == '*' || in_array($group->id, $this->sources)))) {
+				$options[$group->id] = $group->name;
+			}
+		}
+		
+		return $options;
+	}
 }

@@ -10,7 +10,7 @@
 
 namespace kuriousagency\categorygroups;
 
-use kuriousagency\categorygroups\fields\CategoryGroupsField as CategoryGroupsFieldField;
+use kuriousagency\categorygroups\fields\CategoryGroupsField;
 
 use Craft;
 use craft\base\Plugin;
@@ -62,7 +62,7 @@ class CategoryGroups extends Plugin
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
             function (RegisterComponentTypesEvent $event) {
-                $event->types[] = CategoryGroupsFieldField::class;
+                $event->types[] = CategoryGroupsField::class;
             }
         );
 

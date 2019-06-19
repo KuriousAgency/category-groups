@@ -1,0 +1,29 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Category Groups plugin for Craft CMS
+ *
+ * CategoryGroupsField Field Settings
+ *
+ * @author    Kurious Agency
+ * @copyright Copyright (c) 2018 Kurious Agency
+ * @link      https://kurious.agency
+ * @package   CategoryGroups
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{# {% do view.registerAssetBundle("kuriousagency\\categorygroups\\assetbundles\\categorygroups\\CategoryGroupsAsset") %} #}
+
+{{ forms.checkboxSelectField({
+	label: "Sources",
+	instructions: "Which category group would you like to be able to choose from?",
+	id: 'sources',
+	name: 'sources',
+	options: field.options,
+	values: field.sources ?? '*',
+	errors: field.getErrors(),
+	showAllOption: true,
+}) }}

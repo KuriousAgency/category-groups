@@ -18,14 +18,6 @@
 {{ forms.selectField({
     id: id,
     name: name,
-    value: value,
+    value: model.value,
     options: options,
 }) }}
-
-{# {{ forms.textField({
-        label: 'Some Field',
-        instructions: 'Enter some text here.',
-        id: name,
-        name: name,
-        value: value})
-}} #}
